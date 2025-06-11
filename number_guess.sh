@@ -55,10 +55,5 @@ IFS="|" read GAMES_PLAYED BEST_GAME <<< "$CURRENT_STATS"
 # Update games played
 NEW_GAMES_PLAYED=$((GAMES_PLAYED + 1))
 
-# Update best game if this one is better or it's the first
-if [[ -z $BEST_GAME || $NUMBER_OF_GUESSES -lt $BEST_GAME ]]; then
-  $PSQL "UPDATE users SET games_played=$NEW_GAMES_PLAYED, best_game=$NUMBER_OF_GUESSES WHERE user_id=$USER_ID"
-else
-  $PSQL "UPDATE users SET games_played=$NEW_GAMES_PLAYED WHERE user_id=$USER_ID"
-fi
+
 
