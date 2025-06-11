@@ -45,3 +45,20 @@ done
 
 echo "You guessed it in $NUMBER_OF_GUESSES tries. The secret number was $SECRET_NUMBER. Nice job!"
 
+# Re-fetch user_id
+USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME'")
+
+# Get current stats
+CURRENT_STATS=$($PSQL "SELECT games_played, best_game FROM users WHERE user_id=$USER_ID")
+IFS="|" read GAMES_PLAYED BEST_GAME <<< "$CURRENT_STATS"
+
+# Update games played
+NEW_GAMES_PLAYED=$((GAMES_PLAYED + 1))
+
+# Update best game if this one is better or it's the first
+if [[ -z $BEST_GAME || $NUMBER_OF_GUESSES -lt $BEST_GAME ]]; then
+  $PSQL "UPDATE users SET games_played=$NEW_GAMES_PLAYED, best_game=$NUMBER_OF_GUESSES WHERE user_id=$USER_ID"
+else
+  $PSQL "UPDATE users SET games_played=$NEW_GAMES_PLAYED WHERE user_id=$USER_ID"
+fi
+
